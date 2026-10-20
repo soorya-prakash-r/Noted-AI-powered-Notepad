@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noted!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg1: #7dd3fc; --bg2: #a78bfa; --bg3: #f0abfc;
+    --glass-bg: rgba(255,255,255,0.35);
+    --glass-border: rgba(255,255,255,0.55);
+    --glass-strong: rgba(255,255,255,0.6);
+    --text-color: #1e1b3a;
+    --muted: rgba(30,27,58,0.6);
+    --primary-color: #4c3fd7;
+    --accent-color: #a855f7;
+    --shadow: 0 8px 32px rgba(31,38,135,0.25);
+}
+body.dark {
+    --bg1: #0f0c29; --bg2: #302b63; --bg3: #24243e;
+    --glass-bg: rgba(30,25,60,0.35);
+    --glass-border: rgba(255,255,255,0.15);
+    --glass-strong: rgba(40,35,75,0.6);
+    --text-color: #f1f0ff;
+    --muted: rgba(241,240,255,0.65);
+    --primary-color: #a78bfa;
+    --accent-color: #f0abfc;
+    --shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; }
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+    background-size: 300% 300%;
+    animation: gradientShift 18s ease infinite;
+}
+@keyframes gradientShift { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+#app { display: flex; flex-direction: column; height: 100vh; }
+.titlebar {
+    height: 44px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 6px 0 0; background: var(--glass-strong);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+}
+.titlebar-left { display: flex; align-items: center; flex: 1; overflow: hidden; }
+.app-logo { flex-shrink: 0; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; color: var(--primary-color); padding: 0 14px; white-space: nowrap; }
+.tabs-scroll { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.tabs-scroll::-webkit-scrollbar { display: none; }
+.tab { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px 8px 0 0; background: rgba(255,255,255,0.12); font-size: 13px; cursor: pointer; white-space: nowrap; border: 1px solid transparent; color: var(--text-color); scroll-margin: 0 20px; }
+.tab.active { background: var(--glass-bg); border-color: var(--glass-border); font-weight: 600; }
+.tab-close { opacity: 0.6; font-size: 14px; line-height: 1; padding: 0 3px; border-radius: 4px; }
+.tab-close:hover { opacity: 1; background: rgba(255,0,0,0.25); }
+.tab-add { padding: 5px 11px; border-radius: 8px; background: rgba(255,255,255,0.12); cursor: pointer; font-size: 15px; color: var(--text-color); flex-shrink: 0; }
+.tab-add:hover { background: var(--primary-color); color: #fff; }
+.win-controls { display: flex; gap: 2px; flex-shrink: 0; }
+.win-btn { width: 32px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-color); }
+.win-btn:hover { background: rgba(255,255,255,0.18); }
+.win-btn.close-btn:hover { background: #e81123; color: #fff; }
+.menubar { display: flex; align-items: center; gap: 4px; padding: 5px 12px; background: var(--glass-bg); border-bottom: 1px solid var(--glass-border); font-size: 13px; flex-wrap: wrap; }
+.menu-item { position: relative; }
+.menu-btn { padding: 6px 12px; border-radius: 8px; cursor: pointer; color: var(--text-color); }
+.menu-btn:hover { background: rgba(255,255,255,0.18); }
+.menu-dropdown { display: none; position: absolute; top: 110%; left: 0; min-width: 175px; background: var(--glass-strong); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 10px; box-shadow: var(--shadow); padding: 6px; z-index: 60; }
+.menu-item.open .menu-dropdown { display: block; }
+.menu-dropdown button { display: block; width: 100%; text-align: left; padding: 8px 10px; border-radius: 6px; background: transparent; border: none; color: var(--text-color); font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; }
+.menu-dropdown button:hover { background: var(--primary-color); color: #fff; }
+.tbtn { padding: 7px 12px; border-radius: 8px; background: var(--glass-strong); border: 1px solid var(--glass-border); color: var(--text-color); cursor: pointer; font-size: 13px; backdrop-filter: blur(10px); font-family: 'Inter', sans-serif; }
+.tbtn:hover { background: var(--primary-color); color: #fff; }
+.tbtn.active-fmt { background: var(--accent-color); color: #fff; }
+.bold-btn { font-weight: 700; } .italic-btn { font-style: italic; } .strike-btn { text-decoration: line-through; }
+.divider { width: 1px; height: 22px; background: var(--glass-border); margin: 0 4px; }
+.searchbar { display: none; padding: 8px 12px; background: var(--glass-bg); border-bottom: 1px solid var(--glass-border); }
+.searchbar.show { display: block; }
+.searchbar-row { display: flex; align-items: center; gap: 8px; }
+.searchbar input { flex: 1; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-strong); color: var(--text-color); font-size: 13px; }
+.searchbar input::placeholder { color: var(--muted); }
+.search-close { cursor: pointer; font-size: 16px; padding: 5px 10px; border-radius: 8px; color: var(--text-color); }
+.search-close:hover { background: rgba(255,0,0,0.2); }
+.match-count { font-size: 11px; color: var(--muted); margin-top: 4px; display: block; }
+.editor-wrap { flex: 1; overflow: auto; padding: 20px 26px; }
+#noteArea { min-height: 100%; outline: none; font-size: 15px; line-height: 1.7; color: var(--text-color); }
+#noteArea:empty::before { content: attr(placeholder); color: var(--muted); }
+#noteArea mark { background: rgba(250,204,21,0.6); border-radius: 3px; }
+.statusbar { display: flex; align-items: center; gap: 12px; padding: 6px 16px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); font-size: 11.5px; color: var(--muted); }
+.statusbar span { white-space: nowrap; }
+.sep { opacity: 0.5; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 300; }
+.modal-box { background: var(--glass-strong); backdrop-filter: blur(24px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; min-width: 300px; box-shadow: var(--shadow); }
+.modal-box h3 { margin: 0 0 12px; font-size: 15px; color: var(--text-color); }
+.modal-box input { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.15); color: var(--text-color); margin-bottom: 14px; font-size: 14px; font-family: 'Inter', sans-serif; }
+.modal-box select { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.15); color: var(--text-color); margin-bottom: 14px; font-size: 14px; font-family: 'Inter', sans-serif; }
+.modal-box select option { color: #1e1b3a; }
+.modal-box label { display: block; font-size: 12px; font-weight: 600; margin: 0 0 5px; color: var(--muted); }
+.ai-hint { font-size: 11.5px; color: var(--muted); margin: -8px 0 12px; line-height: 1.4; }
+.ai-status { font-size: 12px; min-height: 16px; margin-bottom: 10px; word-break: break-word; }
+.ai-status.ok { color: #16a34a; } .ai-status.err { color: #dc2626; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.modal-actions button { padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-family: 'Inter', sans-serif; }
+.confirm-btn { background: var(--primary-color); color: #fff; }
+.cancel-btn { background: rgba(255,255,255,0.18); color: var(--text-color); }
+.toast { min-width: 220px; margin-top: 10px; padding: 13px 18px; border-radius: 14px; color: #fff; font-size: 14px; background: rgba(30,27,58,0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.2); box-shadow: var(--shadow); opacity: 0; transform: translateX(110%); transition: all 0.4s ease; }
+.toast.show { opacity: 1; transform: translateX(0); }
+.toast.success { border-left: 4px solid #4caf50; }
+.toast.error { border-left: 4px solid #f44336; }
+.toast.info { border-left: 4px solid #2196f3; }
+.toast.warning { border-left: 4px solid #ff9800; }
+
+.print-header { display: none; }
+.rs { position: fixed; z-index: 500; }
+.rs-r { top: 44px; right: 0; width: 4px; bottom: 16px; cursor: ew-resize; }
+.rs-b { left: 0; bottom: 0; height: 4px; right: 16px; cursor: ns-resize; }
+.rs-c { right: 0; bottom: 0; width: 16px; height: 16px; cursor: nwse-resize; }
+@page { margin: 0; }
+@media print {
+  .rs { display: none !important; }
+  .print-header { display: block; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 14px; color: #000; }
+  .print-header b { font-size: 20px; font-weight: 800; color: #4c3fd7; }
+  .print-header span { font-size: 13px; margin-left: 10px; color: #555; }
+}
+
+.tab { flex-shrink: 0; }
+.tab > span:first-child { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="toastContainer" style="position:fixed;bottom:16px;right:16px;z-index:400;"></div>
+<div id="modalRoot"></div>
+<div class="rs rs-r" data-dir="x"></div>
+<div class="rs rs-b" data-dir="y"></div>
+<div class="rs rs-c" data-dir="xy"></div>
+<div id="app">
+  <div class="titlebar pywebview-drag-region">
+    <div class="titlebar-left pywebview-drag-region">
+      <span class="app-logo pywebview-drag-region">Noted!</span>
+      <div class="tabs-scroll pywebview-drag-region" id="tabsRow"></div>
+    </div>
+    <div class="win-controls">
+      <div class="win-btn" onclick="winAction('minimize')">–</div>
+      <div class="win-btn" onclick="winAction('maximize')">▢</div>
+      <div class="win-btn close-btn" onclick="winAction('close')">×</div>
+    </div>
+  </div>
+  <div class="menubar">
+    <div class="menu-item">
+      <div class="menu-btn">File</div>
+      <div class="menu-dropdown">
+        <button onclick="openNewNote()">New Note</button>
+        <button onclick="newWindow()">New Window</button>
+        <button onclick="newWindow(true)">New Clean Window</button>
+        <button onclick="openFile()">Open...</button>
+        <button onclick="saveNote()">Save</button>
+        <button onclick="saveAs()">Save As...</button>
+        <button onclick="printNote()">Print</button>
+        <button onclick="promptRename()">Rename Note</button>
+        <button onclick="deleteNoteById(currentNoteId)">Delete Note</button>
+        <button onclick="winAction('close')">Exit</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-btn">Edit</div>
+      <div class="menu-dropdown">
+        <button onclick="undoLast()">Undo</button>
+        <button onclick="redoLast()">Redo</button>
+        <button onclick="cutText()">Cut</button>
+        <button onclick="copyText()">Copy</button>
+        <button onclick="pasteText()">Paste</button>
+        <button onclick="deleteSelection()">Delete</button>
+        <button onclick="selectAllNote()">Select All</button>
+        <button onclick="toggleSearch()">Find</button>
+        <button onclick="toggleFormat('bold')">Bold</button>
+        <button onclick="toggleFormat('italic')">Italic</button>
+        <button onclick="toggleFormat('underline')">Underline</button>
+        <button onclick="toggleFormat('strikeThrough')">Strikethrough</button>
+        <button onclick="clearNote()">Clear Note</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="menu-item">
+      <div class="tbtn menu-btn">H1</div>
+      <div class="menu-dropdown">
+        <button onmousedown="event.preventDefault()" onclick="formatBlock('p')">Normal</button>
+        <button onmousedown="event.preventDefault()" onclick="formatBlock('h1')">Heading 1</button>
+        <button onmousedown="event.preventDefault()" onclick="formatBlock('h2')">Heading 2</button>
+        <button onmousedown="event.preventDefault()" onclick="formatBlock('h3')">Heading 3</button>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="tbtn menu-btn">List</div>
+      <div class="menu-dropdown">
+        <button onmousedown="event.preventDefault()" onclick="toggleFormat('insertUnorderedList')">Bulleted List</button>
+        <button onmousedown="event.preventDefault()" onclick="toggleFormat('insertOrderedList')">Numbered List</button>
+      </div>
+    </div>
+    <button class="tbtn bold-btn" id="boldBtn" onmousedown="event.preventDefault()" onclick="toggleFormat('bold')">B</button>
+    <button class="tbtn italic-btn" id="italicBtn" onmousedown="event.preventDefault()" onclick="toggleFormat('italic')">I</button>
+    <button class="tbtn strike-btn" id="strikeBtn" onmousedown="event.preventDefault()" onclick="toggleFormat('strikeThrough')">S</button>
+    <div class="divider"></div>
+    <button class="tbtn" id="aiBtn" onclick="enhanceNote()">Enhance with AI</button>
+    <div class="menu-item">
+      <div class="tbtn menu-btn">Settings</div>
+      <div class="menu-dropdown">
+        <button onclick="showAISettings()">AI Settings...</button>
+        <button onclick="toggleDarkMode()">Toggle Theme</button>
+        <button onclick="showShortcuts()">Keyboard Shortcuts</button>
+      </div>
+    </div>
+  </div>
+  <div class="searchbar" id="searchbar">
+    <div class="searchbar-row">
+      <input type="text" id="searchInput" placeholder="Find in notes..." oninput="handleSearch()">
+      <span class="search-close" onclick="toggleSearch()">×</span>
+    </div>
+    <span class="match-count" id="matchCount"></span>
+  </div>
+  <input type="file" id="fileInput" accept=".doc,.html,.htm,.txt,.md" style="display:none" onchange="handleFileOpen(event)">
+  <div class="editor-wrap">
+    <div class="print-header"><b>Noted!</b><span id="printTitle"></span></div>
+    <div id="noteArea" contenteditable="true" placeholder="Start typing your notes..."></div>
+  </div>
+  <div class="statusbar">
+    <span id="statTitle">Untitled</span><span class="sep">|</span>
+    <span id="wordCount">0 words, 0 characters</span><span class="sep">|</span>
+    <span>Rich Text</span><span class="sep">|</span>
+    <span id="saveStatus">Saved</span><span class="sep">|</span>
+    <span>UTF-8</span>
+  </div>
+</div>
+<script>
+const STORAGE_KEY = "notedAppData";
+let notes = [{ id: 1, title: 'Untitled', content: '', undoStack: [] }];
+let currentNoteId = 1;
+let noteCount = 1;
+const MAX_TITLE = 100;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+let persistFailed = false;
+let enhancing = false;
+let CLEAN = new URLSearchParams(location.search).has('clean');
+
+function enterCleanMode() {
+    CLEAN = true;
+    notes = [{ id: newId(), title: 'Untitled', content: '', undoStack: [] }];
+    currentNoteId = notes[0].id;
+    noteCount = 1;
+    document.getElementById('noteArea').innerHTML = '';
+    renderTabs();
+    updateWordCount();
+    document.getElementById('saveStatus').textContent = 'Temporary window';
+}
+
+function newId() { return Date.now() * 1000 + Math.floor(Math.random() * 1000); }
+
+function plainText(html) {
+    return new DOMParser().parseFromString(String(html || ''), 'text/html').body.textContent || '';
+}
+
+const DROP_TAGS = new Set(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','LINK','META','NOSCRIPT','TEMPLATE','SVG','MATH','FORM','INPUT','BUTTON','TEXTAREA','SELECT','IMG','VIDEO','AUDIO','CANVAS','BASE','APPLET']);
+const KEEP_TAGS = new Set(['B','STRONG','I','EM','U','S','STRIKE','DEL','H1','H2','H3','H4','H5','H6','P','DIV','SPAN','BR','UL','OL','LI','BLOCKQUOTE','PRE','CODE','A','HR','SUB','SUP','TABLE','THEAD','TBODY','TR','TD','TH']);
+// Whitelist sanitizer: strips scripts, event handlers, styles, images, unknown tags.
+function sanitizeHtml(html) {
+    const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+    (function clean(node) {
+        Array.from(node.childNodes).forEach(ch => {
+            if (ch.nodeType === 3) return;
+            if (ch.nodeType !== 1) { ch.remove(); return; }
+            const tag = ch.tagName.toUpperCase();
+            if (DROP_TAGS.has(tag)) { ch.remove(); return; }
+            if (!KEEP_TAGS.has(tag)) { clean(ch); ch.replaceWith(...Array.from(ch.childNodes)); return; }
+            Array.from(ch.attributes).forEach(a => {
+                const keepHref = tag === 'A' && a.name.toLowerCase() === 'href' && /^(https?:|mailto:)/i.test(a.value.trim());
+                if (!keepHref) ch.removeAttribute(a.name);
+            });
+            if (tag === 'A') ch.setAttribute('rel', 'noopener noreferrer');
+            clean(ch);
+        });
+    })(doc.body);
+    return doc.body.innerHTML;
+}
+
+function safeFileName(s) {
+    const n = String(s || '').replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').replace(/[. ]+$/, '').trim().slice(0, MAX_TITLE);
+    return n || 'Untitled';
+}
+
+function loadFromStorage() {
+    if (CLEAN) return;
+    let raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return; }
+    if (!raw) return;
+    try {
+        const data = JSON.parse(raw);
+        if (!data || !Array.isArray(data.notes)) return;
+        const seen = new Set();
+        const loaded = data.notes.filter(n => n && typeof n === 'object').map(n => {
+            let id = Number(n.id);
+            if (!Number.isFinite(id) || seen.has(id)) id = newId();
+            seen.add(id);
+            return { id, title: String(n.title || 'Untitled').slice(0, MAX_TITLE), content: sanitizeHtml(n.content || ''), filePath: String(n.filePath || ''), undoStack: [] };
+        });
+        if (!loaded.length) return;
+        notes = loaded;
+        const cid = Number(data.currentNoteId);
+        currentNoteId = notes.some(n => n.id === cid) ? cid : notes[0].id;
+        noteCount = Number(data.noteCount) || notes.length;
+    } catch (e) {}
+}
+
+function persist() {
+    if (CLEAN) { document.getElementById("saveStatus").textContent = "Temporary window"; return; }
+    const data = { notes: notes.map(n => ({ id: n.id, title: n.title, content: n.content, filePath: n.filePath || '' })), currentNoteId, noteCount };
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        persistFailed = false;
+        document.getElementById("saveStatus").textContent = "Saved";
+    } catch (e) {
+        document.getElementById("saveStatus").textContent = "Not saved";
+        if (!persistFailed) showToast("Storage full or unavailable - notes are not being saved. Use File > Save As.", "error");
+        persistFailed = true;
+    }
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("notedAppTheme", document.body.classList.contains("dark") ? "dark" : "light");
+    closeAllMenus();
+}
+
+function noteMatchesQuery(note, query) {
+    const plain = (note.title + ' ' + plainText(note.content)).toLowerCase();
+    return plain.includes(query);
+}
+
+function renderTabs() {
+    const tabsRow = document.getElementById('tabsRow');
+    tabsRow.innerHTML = '';
+    notes.forEach(note => {
+        const tab = document.createElement('div');
+        tab.className = 'tab' + (note.id === currentNoteId ? ' active' : '');
+        tab.onclick = () => switchNote(note.id);
+        const label = document.createElement('span');
+        label.textContent = note.title;
+        const closeBtn = document.createElement('span');
+        closeBtn.className = 'tab-close';
+        closeBtn.textContent = '×';
+        closeBtn.onclick = (e) => { e.stopPropagation(); deleteNoteById(note.id); };
+        tab.appendChild(label);
+        tab.appendChild(closeBtn);
+        tabsRow.appendChild(tab);
+    });
+    const addBtn = document.createElement('div');
+    addBtn.className = 'tab-add';
+    addBtn.textContent = '+';
+    addBtn.onclick = openNewNote;
+    tabsRow.appendChild(addBtn);
+    const cur = notes.find(n => n.id === currentNoteId);
+    document.getElementById('statTitle').textContent = cur ? cur.title : 'Untitled';
+    const activeTab = tabsRow.querySelector('.tab.active');
+    if (activeTab) activeTab.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+}
+
+function switchNote(id) {
+    saveCurrentNoteContent();
+    currentNoteId = id;
+    const note = notes.find(n => n.id === id);
+    document.getElementById('noteArea').innerHTML = note.content;
+    renderTabs();
+    updateWordCount();
+    persist();
+}
+
+function switchToAdjacentTab(direction) {
+    const idx = notes.findIndex(n => n.id === currentNoteId);
+    if (idx === -1 || notes.length < 2) return;
+    const nextIdx = (idx + direction + notes.length) % notes.length;
+    switchNote(notes[nextIdx].id);
+}
+
+function saveCurrentNoteContent() {
+    const note = notes.find(n => n.id === currentNoteId);
+    if (note) note.content = document.getElementById('noteArea').innerHTML;
+}
+
+function updateWordCount() {
+    const text = document.getElementById('noteArea').innerText.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    document.getElementById('wordCount').textContent = words + ' words, ' + text.length + ' characters';
+}
+
+function toggleSearch() {
+    const bar = document.getElementById('searchbar');
+    bar.classList.toggle('show');
+    if (bar.classList.contains('show')) document.getElementById('searchInput').focus();
+    closeAllMenus();
+}
+
+function handleSearch() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    const matchCountEl = document.getElementById('matchCount');
+    if (!query) { matchCountEl.textContent = ''; return; }
+    const cur = notes.find(n => n.id === currentNoteId);
+    const firstMatch = noteMatchesQuery(cur, query) ? cur : notes.find(n => noteMatchesQuery(n, query));
+    if (firstMatch) {
+        if (firstMatch.id !== currentNoteId) switchNote(firstMatch.id);
+        let total = 0;
+        notes.forEach(n => { total += plainText(n.content).toLowerCase().split(query).length - 1; });
+        matchCountEl.textContent = total + ' match' + (total === 1 ? '' : 'es') + ' — showing "' + firstMatch.title + '"';
+    } else {
+        matchCountEl.textContent = 'No notes found';
+    }
+}
+
+function ensureEditorFocus() {
+    const noteArea = document.getElementById('noteArea');
+    noteArea.focus();
+    const sel = window.getSelection();
+    if (!sel.rangeCount || !noteArea.contains(sel.anchorNode)) {
+        const range = document.createRange();
+        range.selectNodeContents(noteArea);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+}
+
+function undoLast() {
+    const note = notes.find(n => n.id === currentNoteId);
+    if (!note || note.undoStack.length === 0) { showToast("Nothing to undo", "warning"); closeAllMenus(); return; }
+    (note.redoStack = note.redoStack || []).push(document.getElementById('noteArea').innerHTML);
+    const previous = note.undoStack.pop();
+    note.content = previous;
+    document.getElementById('noteArea').innerHTML = previous;
+    updateWordCount();
+    persist();
+    showToast("Undo successful", "info");
+    closeAllMenus();
+}
+function redoLast() {
+    const note = notes.find(n => n.id === currentNoteId);
+    if (!note || !note.redoStack || note.redoStack.length === 0) { showToast("Nothing to redo", "warning"); closeAllMenus(); return; }
+    note.undoStack.push(document.getElementById('noteArea').innerHTML);
+    const next = note.redoStack.pop();
+    note.content = next;
+    document.getElementById('noteArea').innerHTML = next;
+    updateWordCount();
+    persist();
+    showToast("Redo successful", "info");
+    closeAllMenus();
+}
+
+function cutText() { ensureEditorFocus(); document.execCommand('cut'); closeAllMenus(); }
+function copyText() { ensureEditorFocus(); document.execCommand('copy'); closeAllMenus(); }
+function insertPlainText(text) {
+    if (!text) { showToast("Nothing to paste (only text can be pasted)", "warning"); return; }
+    ensureEditorFocus();
+    if (document.execCommand('insertText', false, text)) return;
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    sel.deleteFromDocument();
+    sel.getRangeAt(0).insertNode(document.createTextNode(text));
+    sel.collapseToEnd();
+    document.getElementById('noteArea').dispatchEvent(new Event('input'));
+}
+async function pasteText() {
+    closeAllMenus();
+    ensureEditorFocus();
+    let text = null;
+    try { if (window.pywebview && pywebview.api && pywebview.api.get_clipboard) text = await pywebview.api.get_clipboard(); } catch (e) {}
+    if (!text) { try { text = await navigator.clipboard.readText(); } catch (e) { text = null; } }
+    if (text === null || text === undefined) { showToast("Clipboard access blocked - press Ctrl+V to paste", "warning"); return; }
+    insertPlainText(text);
+}
+function deleteSelection() { ensureEditorFocus(); document.execCommand('delete'); closeAllMenus(); }
+function selectAllNote() {
+    const noteArea = document.getElementById('noteArea');
+    noteArea.focus();
+    const range = document.createRange();
+    range.selectNodeContents(noteArea);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    closeAllMenus();
+}
+
+function openNewNote() {
+    saveCurrentNoteContent();
+    noteCount++;
+    const newNote = { id: newId(), title: 'Untitled ' + noteCount, content: '', undoStack: [] };
+    notes.push(newNote);
+    currentNoteId = newNote.id;
+    document.getElementById('noteArea').innerHTML = '';
+    renderTabs();
+    updateWordCount();
+    persist();
+    showToast("New note created", "success");
+}
+
+function deleteNoteById(id) {
+    closeAllMenus();
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+    if (notes.length === 1) { showToast("The last note cannot be deleted", "warning"); return; }
+    showConfirm("Delete Note", 'Delete "' + escapeHtml(note.title) + '"? This cannot be undone.', () => {
+        notes = notes.filter(n => n.id !== id);
+        if (currentNoteId === id) { currentNoteId = notes[0].id; document.getElementById('noteArea').innerHTML = notes[0].content; }
+        renderTabs(); updateWordCount(); persist();
+        showToast("Note deleted", "error");
+    }, "Delete");
+}
+
+function clearNote() {
+    closeAllMenus();
+    showConfirm("Clear Note", "Clear all content of this note? You can undo with Ctrl+Z.", () => {
+        const note = notes.find(n => n.id === currentNoteId);
+        if (!note) return;
+        note.undoStack.push(document.getElementById('noteArea').innerHTML);
+        note.content = '';
+        document.getElementById('noteArea').innerHTML = '';
+        updateWordCount();
+        persist();
+        showToast("Note cleared", "warning");
+    }, "Clear");
+}
+
+function createNoteFromFile(name, raw) {
+    name = String(name || 'Untitled');
+    raw = String(raw || '').replace(/^\uFEFF/, '');
+    const looksHtml = /\.(html?|doc)$/i.test(name) && /<(html|body|p|div|br|b|i|u|h[1-6]|ul|ol)\b/i.test(raw);
+    let content;
+    if (looksHtml) {
+        const m = raw.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+        content = sanitizeHtml(m ? m[1] : raw);
+    } else {
+        content = escapeHtml(raw).replace(/\r?\n/g, '<br>');
+    }
+    saveCurrentNoteContent();
+    noteCount++;
+    const title = (name.replace(/\.[^/.]+$/, "") || 'Untitled').slice(0, MAX_TITLE);
+    const newNote = { id: newId(), title: title, content: content, undoStack: [] };
+    notes.push(newNote);
+    currentNoteId = newNote.id;
+    document.getElementById("noteArea").innerHTML = content;
+    renderTabs();
+    updateWordCount();
+    persist();
+    showToast('Opened "' + title + '"', "success");
+}
+
+async function openFile() {
+    closeAllMenus();
+    if (window.pywebview && pywebview.api) {
+        try {
+            const result = await pywebview.api.open_file();
+            if (result && result.error) showToast(result.error, "error");
+            else if (result) createNoteFromFile(result.name, result.content);
+        } catch (e) { showToast("Couldn't open file", "error"); }
+    } else {
+        document.getElementById("fileInput").click();
+    }
+}
+
+function handleFileOpen(event) {
+    const file = event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    if (file.size > MAX_FILE_BYTES) { showToast("File too large (max 10 MB)", "error"); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => createNoteFromFile(file.name, e.target.result);
+    reader.onerror = () => showToast("Couldn't read file", "error");
+    reader.readAsText(file);
+}
+
+function downloadBlob(filename, content) {
+    const blob = new Blob([content], { type: "application/msword" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function buildDocHtml(note) {
+    return `<html><head><meta charset="UTF-8"></head><body>${note.content}</body></html>`;
+}
+
+// Save: write straight to the note's file if it already has one, otherwise behave like Save As.
+async function saveNote() {
+    closeAllMenus();
+    const note = notes.find(n => n.id === currentNoteId);
+    if (!note) return;
+    saveCurrentNoteContent();
+    if (!(window.pywebview && pywebview.api) || !note.filePath) { return saveAs(); }
+    let r = null;
+    try { r = await pywebview.api.save_to_path(note.filePath, buildDocHtml(note)); } catch (e) {}
+    if (r && r.ok) {
+        showToast("Saved to " + note.filePath, "success");
+    } else {
+        showToast("Couldn't save to the previous location - choose a new one", "warning");
+        saveAs();
+    }
+}
+
+// Save As: always shows the Windows Save As dialog and remembers the chosen file.
+async function saveAs() {
+    closeAllMenus();
+    const note = notes.find(n => n.id === currentNoteId);
+    if (!note) return;
+    saveCurrentNoteContent();
+    const htmlContent = buildDocHtml(note);
+    if (window.pywebview && pywebview.api) {
+        const base = note.filePath ? note.filePath.split(/[\\/]/).pop() : safeFileName(note.title);
+        const filename = base.toLowerCase().endsWith('.doc') ? base : base + '.doc';
+        try {
+            const r = await pywebview.api.save_file_as(filename, htmlContent);
+            if (r && r.ok) {
+                note.filePath = r.path;
+                persist();
+                showToast("Saved to " + r.path, "success");
+            } else if (r && r.error) {
+                showToast("Couldn't save: " + r.error, "error");
+            }
+        } catch (e) { showToast("Couldn't save file", "error"); }
+    } else {
+        showPrompt("Save As", note.title, (name) => {
+            const fn = safeFileName(name);
+            downloadBlob(fn + ".doc", htmlContent);
+            showToast("Saved as " + fn + ".doc", "success");
+        });
+    }
+}
+
+function printNote() {
+    closeAllMenus();
+    const note = notes.find(n => n.id === currentNoteId);
+    document.getElementById('printTitle').textContent = note ? note.title : '';
+    window.print();
+}
+
+async function newWindow(clean) {
+    closeAllMenus();
+    const isClean = clean === true;
+    if (window.pywebview && pywebview.api) {
+        try { await pywebview.api.new_window(isClean); }
+        catch (e) { showToast("Couldn't open window: " + e, "error"); }
+    } else {
+        window.open(location.href.split('?')[0] + (isClean ? '?clean=1' : ''), "_blank");
+    }
+}
+
+function promptRename() {
+    const note = notes.find(n => n.id === currentNoteId);
+    showPrompt("Rename Note", note.title, (name) => {
+        note.title = name.slice(0, MAX_TITLE);
+        renderTabs();
+        persist();
+        showToast("Note renamed", "success");
+    });
+    closeAllMenus();
+}
+
+function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function showPrompt(title, defaultVal, onConfirm) {
+    defaultVal = escapeHtml(defaultVal);
+    const root = document.getElementById('modalRoot');
+    root.innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal-box"><h3>${title}</h3><input id="modalInput" type="text" maxlength="100" value="${defaultVal}"><div class="modal-actions"><button class="cancel-btn" id="modalCancel">Cancel</button><button class="confirm-btn" id="modalConfirm">Confirm</button></div></div></div>`;
+    const input = document.getElementById('modalInput');
+    input.focus();
+    input.select();
+    const close = () => { root.innerHTML = ''; };
+    document.getElementById('modalConfirm').onclick = () => { const val = input.value.trim(); close(); if (val) onConfirm(val); };
+    document.getElementById('modalCancel').onclick = close;
+    document.getElementById('modalOverlay').onclick = (e) => { if (e.target.id === 'modalOverlay') close(); };
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('modalConfirm').click();
+        if (e.key === 'Escape') close();
+    });
+}
+
+function showConfirm(title, message, onConfirm, confirmLabel = "Confirm") {
+    const root = document.getElementById('modalRoot');
+    root.innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal-box"><h3>${title}</h3><p style="font-size:13px;color:var(--text-color);margin:0 0 16px;line-height:1.5;">${message}</p><div class="modal-actions"><button class="cancel-btn" id="modalCancel">Cancel</button><button class="confirm-btn" id="modalConfirm">${confirmLabel}</button></div></div></div>`;
+    const close = () => { root.innerHTML = ''; };
+    document.getElementById('modalConfirm').onclick = () => { close(); onConfirm(); };
+    document.getElementById('modalCancel').onclick = close;
+    document.getElementById('modalConfirm').focus();
+    document.getElementById('modalOverlay').onclick = (e) => { if (e.target.id === 'modalOverlay') close(); };
+}
+
+function showShortcuts() {
+    const root = document.getElementById('modalRoot');
+    root.innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal-box" style="min-width:300px;"><h3>Keyboard Shortcuts</h3>
+    <div style="font-size:13px;line-height:2;color:var(--text-color);margin-bottom:16px;">
+      <div><b>Ctrl + N / Ctrl + T</b> — New Note</div>
+      <div><b>Ctrl + Shift + N</b> — New Window</div>
+      <div><b>Alt + A</b> — Enhance with AI</div>
+      <div><b>Ctrl + W</b> — Delete Note</div>
+      <div><b>Ctrl + S</b> — Save</div>
+      <div><b>Ctrl + Shift + S</b> — Save As</div>
+      <div><b>Ctrl + O</b> — Open File</div>
+      <div><b>Ctrl + Z</b> — Undo</div>
+      <div><b>Ctrl + Y</b> — Redo</div>
+      <div><b>Ctrl + F</b> — Find</div>
+      <div><b>Ctrl + R</b> — Rename Note</div>
+      <div><b>Ctrl + Tab</b> — Next Note</div>
+      <div><b>Ctrl + Shift + Tab</b> — Previous Note</div>
+    </div>
+    <div class="modal-actions"><button class="confirm-btn" id="modalClose">Close</button></div>
+    </div></div>`;
+    const close = () => { root.innerHTML = ''; };
+    document.getElementById('modalClose').onclick = close;
+    document.getElementById('modalOverlay').onclick = (e) => { if (e.target.id === 'modalOverlay') close(); };
+    closeAllMenus();
+}
+
+const AI_PROVIDERS = {
+    gemini:     { label: 'Google Gemini',          model: 'gemini/gemini-2.5-flash',                   base: '', keyHint: 'Get a key at aistudio.google.com.' },
+    openai:     { label: 'OpenAI',                 model: 'openai/gpt-4o-mini',                        base: '', keyHint: 'Get a key at platform.openai.com.' },
+    anthropic:  { label: 'Anthropic (Claude)',     model: 'anthropic/claude-haiku-4-5-20251001',       base: '', keyHint: 'Get a key at console.anthropic.com.' },
+    groq:       { label: 'Groq',                   model: 'groq/llama-3.3-70b-versatile',              base: '', keyHint: 'Get a key at console.groq.com.' },
+    mistral:    { label: 'Mistral',                model: 'mistral/mistral-small-latest',              base: '', keyHint: 'Get a key at console.mistral.ai.' },
+    openrouter: { label: 'OpenRouter',             model: 'openrouter/openai/gpt-4o-mini',             base: '', keyHint: 'Get a key at openrouter.ai.' },
+    ollama:     { label: 'Ollama (local, no key)', model: 'ollama/llama3.2',                           base: 'http://localhost:11434', keyHint: 'No key needed. Ollama must be running.' },
+    custom:     { label: 'Custom (OpenAI-compatible)', model: 'openai/your-model-name',                base: 'http://localhost:1234/v1', keyHint: 'Any OpenAI-compatible endpoint. Key optional.' }
+};
+
+async function showAISettings() {
+    closeAllMenus();
+    if (!(window.pywebview && pywebview.api)) { showToast("Only available in the desktop app", "warning"); return; }
+    const cfg = await pywebview.api.get_ai_settings();
+    const root = document.getElementById('modalRoot');
+    const opts = Object.entries(AI_PROVIDERS).map(([id, p]) =>
+        `<option value="${id}"${id === cfg.provider ? ' selected' : ''}>${p.label}</option>`).join('');
+    root.innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal-box" style="width:420px;max-width:92vw;max-height:92vh;overflow:auto;">
+        <h3>AI Settings</h3>
+        <label for="aiProvider">Provider</label>
+        <select id="aiProvider">${opts}</select>
+        <label for="aiModel">Model (LiteLLM name)</label>
+        <input id="aiModel" type="text" value="${escapeHtml(cfg.model)}" spellcheck="false">
+        <label for="aiKey">API key</label>
+        <input id="aiKey" type="password" autocomplete="off" spellcheck="false">
+        <div class="ai-hint" id="aiKeyHint"></div>
+        <label for="aiBase">API base URL (optional)</label>
+        <input id="aiBase" type="text" value="${escapeHtml(cfg.api_base)}" spellcheck="false" placeholder="Leave empty for the provider default">
+        <div class="ai-status" id="aiStatus"></div>
+        <div class="modal-actions">
+            <button class="cancel-btn" id="aiClear">Remove key</button>
+            <button class="cancel-btn" id="aiTest">Test</button>
+            <button class="cancel-btn" id="aiCancel">Cancel</button>
+            <button class="confirm-btn" id="aiSave">Save</button>
+        </div></div></div>`;
+
+    const $ = id => document.getElementById(id);
+    const close = () => { root.innerHTML = ''; };
+    const setStatus = (msg, cls) => { $('aiStatus').textContent = msg || ''; $('aiStatus').className = 'ai-status ' + (cls || ''); };
+    const vals = () => [$('aiProvider').value, $('aiModel').value, $('aiBase').value, $('aiKey').value];
+
+    async function refreshKeyUi() {
+        const p = $('aiProvider').value;
+        const has = await pywebview.api.has_key(p);
+        $('aiKey').placeholder = has ? '•••••••• saved (leave blank to keep)' : 'Paste your API key';
+        $('aiKeyHint').textContent = AI_PROVIDERS[p].keyHint + ' Stored in Windows Credential Manager.';
+        $('aiClear').style.display = has ? '' : 'none';
+    }
+    refreshKeyUi();
+
+    $('aiProvider').onchange = () => {
+        const p = AI_PROVIDERS[$('aiProvider').value];
+        $('aiModel').value = p.model;
+        $('aiBase').value = p.base;
+        $('aiKey').value = '';
+        setStatus('');
+        refreshKeyUi();
+    };
+    $('aiClear').onclick = async () => {
+        await pywebview.api.clear_api_key($('aiProvider').value);
+        $('aiKey').value = '';
+        setStatus('Key removed.', 'ok');
+        refreshKeyUi();
+    };
+    $('aiTest').onclick = async () => {
+        const btn = $('aiTest');
+        btn.disabled = true; btn.textContent = 'Testing...'; setStatus('');
+        try {
+            const r = await pywebview.api.test_ai_connection(...vals());
+            if (r.ok) setStatus('Connection works.', 'ok'); else setStatus(r.error, 'err');
+        } catch (e) { setStatus('Test failed: ' + e, 'err'); }
+        btn.disabled = false; btn.textContent = 'Test';
+    };
+    $('aiCancel').onclick = close;
+    $('aiSave').onclick = async () => {
+        const [provider, model, base, key] = vals();
+        if (!model.trim()) { setStatus('Please enter a model name.', 'err'); return; }
+        const sr = await pywebview.api.save_ai_settings(provider, model, base, key);
+        if (sr && sr.ok === false) { setStatus(sr.error || 'Could not save settings.', 'err'); return; }
+        close();
+        showToast('AI settings saved', 'success');
+    };
+    $('aiModel').addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+}
+
+async function enhanceNote() {
+    if (enhancing) return;
+    const note = notes.find(n => n.id === currentNoteId);
+    if (!note) return;
+    saveCurrentNoteContent();
+    if (!plainText(note.content).trim()) { showToast("Note is empty", "warning"); return; }
+    if (!(window.pywebview && pywebview.api)) { showToast("AI is only available in the desktop app", "error"); return; }
+    const sent = note.content;
+    const btn = document.getElementById('aiBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Enhancing...';
+    btn.disabled = true;
+    enhancing = true;
+    try {
+        const data = await pywebview.api.enhance_note(sent);
+        if (data && data.ok) {
+            if (!notes.includes(note)) {
+                showToast("Note was deleted while enhancing", "warning");
+            } else if (note.content !== sent) {
+                showToast("Note changed while enhancing - AI result discarded", "warning");
+            } else {
+                note.undoStack.push(sent);
+                note.content = sanitizeHtml(data.enhanced_note);
+                if (note.id === currentNoteId) {
+                    document.getElementById("noteArea").innerHTML = note.content;
+                    updateWordCount();
+                }
+                persist();
+                showToast("Note enhanced by AI", "success");
+            }
+        } else if (data && data.error === 'no_key') {
+            showToast("Add your AI API key first", "warning");
+            showAISettings();
+        } else {
+            showToast("AI error: " + (data && data.error ? data.error : "unknown error"), "error");
+        }
+    } catch (err) {
+        showToast("Failed to enhance note", "error");
+    } finally {
+        enhancing = false;
+        btn.textContent = original;
+        btn.disabled = false;
+    }
+}
+function formatBlock(tag) {
+    ensureEditorFocus();
+    document.execCommand('formatBlock', false, '<' + tag + '>');
+    updateToolbar();
+    closeAllMenus();
+}
+
+function toggleFormat(cmd) {
+    ensureEditorFocus();
+    document.execCommand(cmd, false, null);
+    updateToolbar();
+    closeAllMenus();
+}
+
+function updateToolbar() {
+    const selection = document.getSelection();
+    if (!selection || !selection.anchorNode) return;
+    if (!document.getElementById("noteArea").contains(selection.anchorNode)) return;
+    document.getElementById("boldBtn").classList.toggle("active-fmt", document.queryCommandState("bold"));
+    document.getElementById("italicBtn").classList.toggle("active-fmt", document.queryCommandState("italic"));
+    document.getElementById("strikeBtn").classList.toggle("active-fmt", document.queryCommandState("strikeThrough"));
+}
+
+function showToast(message, type = "info") {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    toast.classList.add("toast", type);
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add("show"), 100);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => container.removeChild(toast), 500);
+    }, 3000);
+}
+
+function closeAllMenus() {
+    document.querySelectorAll('.menu-item.open').forEach(el => el.classList.remove('open'));
+}
+
+function winAction(action) {
+    if (window.pywebview && window.pywebview.api) {
+        if (action === 'minimize') pywebview.api.minimize();
+        else if (action === 'maximize') pywebview.api.toggle_maximize();
+        else if (action === 'close') pywebview.api.close();
+    } else if (action === 'close') {
+        window.close();
+    }
+}
+
+document.querySelectorAll('.menu-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const item = btn.closest('.menu-item');
+        const wasOpen = item.classList.contains('open');
+        closeAllMenus();
+        if (!wasOpen) item.classList.add('open');
+    });
+});
+document.addEventListener('click', closeAllMenus);
+
+loadFromStorage();
+if (localStorage.getItem("notedAppTheme") === "dark") document.body.classList.add("dark");
+
+const noteArea = document.getElementById("noteArea");
+noteArea.innerHTML = (notes.find(n => n.id === currentNoteId) || notes[0]).content;
+noteArea.addEventListener("focus", updateToolbar);
+noteArea.addEventListener("keyup", updateToolbar);
+noteArea.addEventListener("mouseup", updateToolbar);
+noteArea.addEventListener("input", () => {
+    const note = notes.find(n => n.id === currentNoteId);
+    if (note) {
+        note.redoStack = [];
+        if (!note.snapshotTaken) {
+            note.undoStack.push(note.content);
+            if (note.undoStack.length > 50) note.undoStack.shift();
+            note.snapshotTaken = true;
+        }
+        note.content = noteArea.innerHTML;
+    }
+    updateWordCount();
+    document.getElementById("saveStatus").textContent = "Editing...";
+    clearTimeout(noteArea._debounce);
+    noteArea._debounce = setTimeout(() => {
+        persist();
+        if (note) note.snapshotTaken = false;
+    }, 600);
+});
+document.addEventListener("selectionchange", updateToolbar);
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        const mr = document.getElementById('modalRoot');
+        if (mr && mr.innerHTML) { mr.innerHTML = ''; return; }
+    }
+    if (e.altKey && e.key.toLowerCase() === 'a') { e.preventDefault(); enhanceNote(); return; }
+    if (!e.ctrlKey) return;
+    const k = e.key.toLowerCase();
+    if (k === 'n') { e.preventDefault(); if (e.shiftKey) newWindow(); else openNewNote(); }
+    else if (k === 'y') { e.preventDefault(); redoLast(); }
+    else if (k === 's') { e.preventDefault(); if (e.shiftKey) saveAs(); else saveNote(); }
+    else if (k === 'o') { e.preventDefault(); openFile(); }
+    else if (k === 'z') { e.preventDefault(); undoLast(); }
+    else if (k === 'f') { e.preventDefault(); toggleSearch(); }
+    else if (k === 'r') { e.preventDefault(); promptRename(); }
+    else if (k === 'd') { e.preventDefault(); deleteNoteById(currentNoteId); }
+    else if (k === 't') { e.preventDefault(); openNewNote(); }
+    else if (k === 'w') { e.preventDefault(); deleteNoteById(currentNoteId); }
+    else if (k === 'tab') { e.preventDefault(); switchToAdjacentTab(e.shiftKey ? -1 : 1); }
+    else if (k === '/') { e.preventDefault(); showShortcuts(); }
+});
+noteArea.addEventListener("paste", function (e) {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+    insertPlainText(text);
+});
+// Block rich/file drops (would bypass sanitizing or navigate away); accept plain text only.
+['dragover', 'drop'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+noteArea.addEventListener('drop', function (e) {
+    const text = e.dataTransfer && e.dataTransfer.getData('text/plain');
+    if (text) insertPlainText(text);
+    else showToast("Only text can be dropped", "warning");
+});
+document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { document.getElementById('searchbar').classList.remove('show'); noteArea.focus(); }
+});
+// Keep multiple windows in sync (they share localStorage).
+window.addEventListener('storage', function (e) {
+    if (CLEAN || e.key !== STORAGE_KEY || !e.newValue) return;
+    try {
+        const d = JSON.parse(e.newValue);
+        if (!d || !Array.isArray(d.notes) || !d.notes.length) return;
+        saveCurrentNoteContent();
+        const cur = notes.find(n => n.id === currentNoteId);
+        const merged = d.notes.filter(n => n && n.id !== undefined).map(n => {
+            if (cur && n.id === cur.id) return cur;
+            const old = notes.find(o => o.id === n.id);
+            return { id: n.id, title: String(n.title || 'Untitled').slice(0, MAX_TITLE), content: sanitizeHtml(n.content || ''), filePath: String(n.filePath || ''), undoStack: old ? old.undoStack : [] };
+        });
+        if (cur && !merged.includes(cur)) merged.push(cur);
+        notes = merged;
+        noteCount = Math.max(noteCount, Number(d.noteCount) || 0);
+        renderTabs();
+    } catch (err) {}
+});
+
+document.querySelectorAll('.rs').forEach(h => {
+    h.addEventListener('pointerdown', e => {
+        if (!(window.pywebview && pywebview.api)) return;
+        e.preventDefault();
+        h.setPointerCapture(e.pointerId);
+        const dir = h.dataset.dir, sx = e.screenX, sy = e.screenY;
+        const w0 = window.outerWidth, h0 = window.outerHeight;
+        let pending = false, nw = w0, nh = h0;
+        const move = ev => {
+            nw = dir.includes('x') ? Math.max(700, w0 + ev.screenX - sx) : w0;
+            nh = dir.includes('y') ? Math.max(480, h0 + ev.screenY - sy) : h0;
+            if (!pending) { pending = true; requestAnimationFrame(() => { pending = false; pywebview.api.resize_window(nw, nh); }); }
+        };
+        const up = () => { h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); };
+        h.addEventListener('pointermove', move);
+        h.addEventListener('pointerup', up);
+    });
+});
+renderTabs();
+updateWordCount();
+</script>
+</body>
+</html>

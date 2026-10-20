@@ -100,3 +100,9 @@ Python · pywebview · LiteLLM · keyring · HTML/CSS/JS
 ## License
 
 MIT © 2026 Soorya Prakash R
+
+## Author
+
+Created by **Soorya Prakash R** - [GitHub](https://github.com/soorya-prakash-r)
+
+If you fork or build on this project, please keep the license notice and link back to this repository.
